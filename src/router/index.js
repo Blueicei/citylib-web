@@ -17,7 +17,7 @@ router.beforeEach((to, from, next) => {
   if (isAuthorized) {
     if (to.path === "/intercept") {
       Message.warning("您是受邀用户")
-      next({path: "/traSearch"})
+      next({path: "/cityFlow"})
       NProgress.done()
       return
     }else {

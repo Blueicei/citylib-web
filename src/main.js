@@ -8,10 +8,13 @@ import router from './router'
 import 'element-ui/lib/theme-chalk/index.css'
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+import * as echarts from 'echarts';
 
+
+Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 Vue.use(BaiduMap,{
-  ak:'F9jWOUu0NEakjr7EdZdZ6KRW2yUAnWqj'
+  ak:'UYchRwVf8niYQwKFALe9f1GppHXeTcU9'
 })
 Vue.use(ElementUI)
 // axios.defaults.baseURL="//211.87.232.144:8081"

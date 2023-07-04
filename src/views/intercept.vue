@@ -32,7 +32,7 @@ export default {
         let token = this.code
         sessionStorage.setItem("token", token)
         this.$router.push({
-          path: "/traSearch"
+          path: "/cityFlow"
         })
       }else {
         this.$message.error("邀请码错误！")

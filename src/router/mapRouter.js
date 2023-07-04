@@ -19,9 +19,21 @@ let MapRouter = [
     component: layoutIndex,
     children: [
       {
-        path: "/traSearch",
-        name: "traSearch",
-        component: () => import("../views/traSearch")
+        path: "/cityFlow",
+        name: "cityFlow",
+        component: () => import("../views/cityFlow.vue")
+      }
+    ]
+  },
+  {
+    path: "",
+    name: "",
+    component: layoutIndex,
+    children: [
+      {
+        path: "/dataProcess",
+        name: "dataProcess",
+        component: () => import("../views/dataProcess.vue")
       }
     ]
   },

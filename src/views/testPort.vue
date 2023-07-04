@@ -72,7 +72,7 @@
 
 <script>
 export default {
-  name: "traSearch",
+  name: "cityFlow",
   data() {
     return {
       center: '济南',
