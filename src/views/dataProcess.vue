@@ -164,7 +164,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span=18 style="text-align: left;">
-                        <el-input v-model="tra.traLength" type="number" style="width: 223px;margin-left: 5px" :disabled="!filterPointNumber">
+                        <el-input v-model="tra.traLength" type="number" style="width: 223px;margin-left: 5px" :disabled="!filterTraLength">
                             <template slot="append">m</template>
                         </el-input>
                     </el-col>
