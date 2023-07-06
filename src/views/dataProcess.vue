@@ -305,19 +305,22 @@ export default {
             console.log(row)
         },
         importData() {
-            let loading = Loading.service({fullscreen: true, text: 'Loading'});
             let leafNode = this.$refs.tree.getCheckedNodes(true, false)
             let arrLabel = []
             leafNode.forEach((item) => {
                 arrLabel.push(this.findIndexArray(this.fileTree, item.id, []).join("/"))
             })
             if (arrLabel.length) {
+                let loading = Loading.service({fullscreen: true, text: 'Loading'});
                 this.axios.post("/camTra/importData", arrLabel).then(res => {
                     setTimeout(() => {
                         loading.close();
                     }, 1000);
                     this.getSourceNames()
                     alert('导入数据成功：数据源名称[' + res.data.msg + ']')
+                }).catch(err => {
+                  console.log(err);
+                  loading.close()
                 })
             } else {
                 alert("请先选择要导入的文件")

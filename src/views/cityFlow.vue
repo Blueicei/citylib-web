@@ -355,7 +355,9 @@ export default {
                 setTimeout(() => {
                     loading.close();
                 }, 1000);
-
+            }).catch(err => {
+              console.log(err)
+              loading.close()
             })
         }
     },
