@@ -92,6 +92,9 @@
                             active-text="显示摄像头"
                             inactive-text="隐藏摄像头">
                     </el-switch>
+                    <el-input placeholder="输入卡口ID，回车" v-model="searchCamId" style="width: 300px;margin-left: 10px" @keyup.enter.native="onEnter">
+                        <template slot="prepend">定位卡口:</template>
+                    </el-input>
                     <el-date-picker
                         style="margin-left: 10px;"
                         v-model="timeRange"
@@ -125,6 +128,7 @@
                         active-text="显示图表"
                         inactive-text="隐藏图表">
                     </el-switch>
+
                 </div>
                 <baidu-map
                         class="map"
@@ -136,6 +140,9 @@
                         :scroll-wheel-zoom="true"
                         @click="handleMapClick"
                 >
+<!--                    <bm-ground-->
+<!--                        :bounds="{ne: {lng: 117.403796 , lat: 36.788462}, sw:{lng: 116.840378, lat: 36.572198}}" :opacity="0.5" :imageURL="img">-->
+<!--                    </bm-ground>-->
                     <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
                     <!-- 海量点部分-->
                     <div v-if="showCamera">
@@ -174,9 +181,10 @@ export default {
             showChart: false,
             showFlow: false,
             flow_loading: false,
+            searchCamId: null,
             flowTable: [],
             flow_current_page: 1,
-
+            img: require('@/assets/images/prey_background.png'),
             // 地图中心
             center: '济南',
             // 车牌信息
@@ -227,6 +235,60 @@ export default {
         handler({BMap, map}) {
             this.baiduMap = BMap
             this.baidumap = map
+            // this.initGrid()
+        },
+        onEnter() {
+            const camera_info = this.camera_info
+            const camId = this.searchCamId
+            camera_info.forEach(item => {
+                if(item.id == camId){
+                    this.center = {lng: item.lng, lat: item.lat}
+                    let map = this.baidumap
+                    let clickPoint = new BMap.Point(item.lng, item.lat)
+                    const markerPoint = new BMap.Marker(clickPoint)
+                    markerPoint.name = item.id
+                    const label = new BMap.Label(item.id, {offset: new BMap.Size(-20, 0)});
+                    label.setStyle({
+                        color: "#fff",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        borderRadius: "10px",
+                        padding: "0 10px",
+                        fontSize: "14px",
+                        lineHeight: "20px",
+                        border :"0",
+                        transform:'translateX(-50%)'
+                    });
+                    markerPoint.setLabel(label);
+                    markerPoint.name = item.id
+                    map.addOverlay(markerPoint);
+                    this.camTable.push({id: item.id, info: item.info})
+                }
+            })
+
+        },
+        initGrid() {
+            let map = this.baidumap
+            let bd = new BMap.Boundary();
+            bd.get('历下区', function (rs) {
+                console.log('外轮廓：', rs.boundaries[0])
+                console.log('内镂空：', rs.boundaries[1])
+                var hole = new BMap.Polygon(rs.boundaries[0], {
+                    fillColor: 'blue',
+                    fillOpacity: 0.2
+                });
+                console.log(hole)
+                map.addOverlay(hole);
+            });
+            bd.get('历城区', function (rs) {
+                console.log('外轮廓：', rs.boundaries[0])
+                console.log('内镂空：', rs.boundaries[1])
+                var hole = new BMap.Polygon(rs.boundaries[0], {
+                    fillColor: 'red',
+                    fillOpacity: 0.2
+                });
+                console.log(hole)
+                map.addOverlay(hole);
+            });
         },
         eChartsInit(data) {
             let xAxis = []
@@ -240,8 +302,7 @@ export default {
                 let tempSeries = {
                     name: item1.camId,
                     data: [],
-                    type: 'line',
-                    stack: 'x'
+                    type: 'line'
                 }
                 legend.push(item1.camId)
                 item1.camFlows.forEach( item2 => {
@@ -318,6 +379,16 @@ export default {
                     this.infoCont = '编号：' + item.id + '<br/>' + '地址：' + item.info
                     this.camTable.push({id: item.id, info: item.info})
                     const label = new BMap.Label(item.id, {offset: new BMap.Size(-20, 0)});
+                    label.setStyle({
+                        color: "#fff",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        borderRadius: "10px",
+                        padding: "0 10px",
+                        fontSize: "14px",
+                        lineHeight: "20px",
+                        border :"0",
+                        transform:'translateX(-50%)'
+                    });
                     markerPoint.setLabel(label);
                     markerPoint.name = item.id
                     map.addOverlay(markerPoint);

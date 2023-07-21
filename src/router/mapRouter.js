@@ -37,6 +37,30 @@ let MapRouter = [
       }
     ]
   },
+  {
+    path: "",
+    name: "",
+    component: layoutIndex,
+    children: [
+      {
+        path: "/carTrajectory",
+        name: "carTrajectory",
+        component: () => import("../views/carTrajectory.vue")
+      }
+    ]
+  },
+  {
+    path: "",
+    name: "",
+    component: layoutIndex,
+    children: [
+      {
+        path: "/carDetail",
+        name: "carDetail",
+        component: () => import("../views/carDetail.vue")
+      }
+    ]
+  },
 ]
 
 export {MapRouter};

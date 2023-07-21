@@ -14,7 +14,7 @@ import * as echarts from 'echarts';
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 Vue.use(BaiduMap,{
-  ak:'UYchRwVf8niYQwKFALe9f1GppHXeTcU9'
+  ak:'ZVFg9cnT2o7QDHB9QQv34kRlTNxVbBdt'
 })
 Vue.use(ElementUI)
 // axios.defaults.baseURL="//211.87.232.144:8081"
