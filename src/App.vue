@@ -1,27 +1,16 @@
 <template>
-    <div id="app">
-        <transition name="el-fade-in-linear">
-            <router-view/>
-        </transition>
-    </div>
+  <div id="app">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-
 export default {
-    name: 'App',
+  name: 'app'
 }
 </script>
 
-<style>
-html,body,#app{
-    height: 100%;
-}
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    margin: -8px -8px auto;
-}
+<style lang="less">
+@import '~@/less/index.less';
+
 </style>
