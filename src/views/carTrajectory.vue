@@ -253,16 +253,16 @@ export default {
             let tempKeyArray = []
             keyArray.forEach((item) => {
               if(flag){
-                tempDistanceDistribute["30km<"] += row.traDistanceDistribute[item]
+                tempDistanceDistribute["30km<"] += traDistanceDistribute[item]
               }
               else {
-                if(item == "30-40km"){
-                  tempDistanceDistribute["30km<"] = row.traDistanceDistribute[item]
+                if(item === "30-40km"){
+                  tempDistanceDistribute["30km<"] = traDistanceDistribute[item]
                   tempKeyArray.push("30km<")
                   flag = true
                 }
                 else {
-                  tempDistanceDistribute[item] = row.traDistanceDistribute[item]
+                  tempDistanceDistribute[item] = traDistanceDistribute[item]
                   tempKeyArray.push(item)
                 }
               }
