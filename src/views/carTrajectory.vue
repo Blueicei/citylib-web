@@ -240,14 +240,8 @@ export default {
           }).then(res => {
             let stat = res.data.msg
 
-            let traTimeDistribute = stat['traTimeDistribute']
-            let keyArray = Object.keys(traTimeDistribute)
-
-            this.initBarChart("timeDistributeChart", '行程时间分布', keyArray, traTimeDistribute)
-
             let traDistanceDistribute = stat['traTimeDistribute'];
-            keyArray = Object.keys(traDistanceDistribute)
-
+            let keyArray = ["0-1km","1-2km","3-4km","5-6km","7-8km","8-9km","9-10km","10-20km","20-30km","30-40km","40-50km","50-60km","60-70km","70-80km","80-90km","90-100km","100km<"]
             let flag = false
             let tempDistanceDistribute = {}
             let tempKeyArray = []
@@ -268,6 +262,10 @@ export default {
               }
             })
             this.initBarChart("distanceDistributeChart", '行程距离分布', tempKeyArray, tempDistanceDistribute)
+
+            let traTimeDistribute = stat['traTimeDistribute']
+            keyArray = ['0-30min', '30min-1h', '1h-2h', '2h<']
+            this.initBarChart("timeDistributeChart", '行程时间分布', keyArray, traTimeDistribute)
 
             let traStartTimePerHour = stat['traStartTimePerHour'];
             keyArray = Object.keys(traStartTimePerHour)
