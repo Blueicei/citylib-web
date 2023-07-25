@@ -240,8 +240,8 @@ export default {
           }).then(res => {
             let stat = res.data.msg
 
-            let traDistanceDistribute = stat['traTimeDistribute'];
-            let keyArray = ["0-1km","1-2km","3-4km","5-6km","7-8km","8-9km","9-10km","10-20km","20-30km","30-40km","40-50km","50-60km","60-70km","70-80km","80-90km","90-100km","100km<"]
+            let traDistanceDistribute = stat['traDistanceDistribute'];
+            let keyArray = ["0-1km","1-2km","2-3km","3-4km","4-5km","5-6km","6-7km","7-8km","8-9km","9-10km","10-20km","20-30km","30-40km","40-50km","50-60km","60-70km","70-80km","80-90km","90-100km","100km+"]
             let flag = false
             let tempDistanceDistribute = {}
             let tempKeyArray = []
@@ -264,7 +264,7 @@ export default {
             this.initBarChart("distanceDistributeChart", '行程距离分布', tempKeyArray, tempDistanceDistribute)
 
             let traTimeDistribute = stat['traTimeDistribute']
-            keyArray = ['0-30min', '30min-1h', '1h-2h', '2h<']
+            keyArray = ['0-30min', '30min-1h', '1-2h', '2h+']
             this.initBarChart("timeDistributeChart", '行程时间分布', keyArray, traTimeDistribute)
 
             let traStartTimePerHour = stat['traStartTimePerHour'];
@@ -334,9 +334,13 @@ export default {
         },
         getTotal(){
           //todo 获取车辆总数、轨迹总数的接口未完成，待更新
-          this.axios.get("/stat/info").then(res => {
-            this.carTotalNumber = res.data.msg.records
-            this.total = res.data.msg.total
+          this.axios.post("/stat/info",{
+            "minTime": this.timeRange[0],
+            "maxTime": this.timeRange[1]
+          }).then(res => {
+            this.carTotalNumber = res.data.msg.carNum
+            this.pointTotalNumber = res.data.msg.pointNum
+            this.traTotalNumber = res.data.msg.traNum
           }).catch(err => {
             console.log(err)
           })
@@ -345,7 +349,7 @@ export default {
     created() {
         this.pageNum = 1
         this.getCarInfoList()
-        // this.getTotal();
+        this.getTotal();
     },
     mounted() {
     },
