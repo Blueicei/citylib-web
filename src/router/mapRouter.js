@@ -61,6 +61,30 @@ let MapRouter = [
       }
     ]
   },
+  {
+    path: "",
+    name: "",
+    component: layoutIndex,
+    children: [
+      {
+        path: "/taxiTra",
+        name: "taxiTra",
+        component: () => import("../views/taxiView/taxiTrajectory.vue")
+      }
+    ]
+  },
+  {
+    path: "",
+    name: "",
+    component: layoutIndex,
+    children: [
+      {
+        path: "/taxiDetail",
+        name: "taxiDetail",
+        component: () => import("../views/taxiView/taxiDetail.vue")
+      }
+    ]
+  },
 ]
 
 export {MapRouter};

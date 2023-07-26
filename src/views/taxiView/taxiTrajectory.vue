@@ -14,9 +14,6 @@
                 <el-input placeholder="等待加载" v-model="traTotalNumber" :disabled="true" style="width: 300px;margin-left: 20px">
                     <template slot="prepend">轨迹总数:</template>
                 </el-input>
-                <el-input placeholder="等待加载" v-model="pointTotalNumber" :disabled="true" style="width: 300px;margin-left: 20px">
-                    <template slot="prepend">轨迹点总数:</template>
-                </el-input>
               <el-date-picker
                   v-model="timeRange"
                   type="datetimerange"
@@ -47,12 +44,6 @@
                             prop="carNumber"
                             align="center"
                             label="车牌号"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                            prop="carType"
-                            align="center"
-                            label="车牌类型"
                     >
                     </el-table-column>
                     <el-table-column
@@ -194,7 +185,7 @@ export default {
             //是否降序
             isDesc: false,
             //过滤时间范围
-            timeRange: ['2021-02-01 00:00:00','2021-02-01 23:59:59'],
+            timeRange: ['2023-04-01 00:00:00','2023-04-30 23:59:59'],
             //车辆的统计信息
             carStat: null
         }
@@ -233,7 +224,7 @@ export default {
             eChart.setOption(option)
         },
       handleRowClick(row) {
-          this.axios.post("/stat/getStatByCar",{
+          this.axios.post("/taxi/getStatByCar",{
             "carNumber": row.carNumber,
             "minTime": this.timeRange[0],
             "maxTime": this.timeRange[1],
@@ -306,16 +297,18 @@ export default {
         },
         goDetail(index, rows) {
             let row = rows[index]
-            console.log(row)
-            this.$router.push({path:'/carDetail',query:{carNumber:row.carNumber}});
+            this.$router.push({path:'/taxiDetail',query:{
+                carNumber:row.carNumber,
+                timeRange: this.timeRange
+            }});
         },
         handleButtonClick() {
-          this.getTotal()
-          this.getCarInfoList()
+          this.getTotal();
+          this.getCarInfoList();
         },
-      getCarInfoList() {
+        getCarInfoList() {
             let loading = Loading.service({ fullscreen: true, text: 'Loading'});
-            this.axios.post("/stat/getStatList",{
+            this.axios.post("/taxi/getStatList",{
               "pageNum": this.pageNum,
               "pageSize":this.pageSize,
               "minTime": this.timeRange[0],
@@ -337,8 +330,7 @@ export default {
             return Number(val).toFixed(2);
         },
         getTotal(){
-          //todo 获取车辆总数、轨迹总数的接口未完成，待更新
-          this.axios.post("/stat/info",{
+          this.axios.post("/taxi/stat",{
             "minTime": this.timeRange[0],
             "maxTime": this.timeRange[1]
           }).then(res => {

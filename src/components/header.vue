@@ -21,6 +21,7 @@
             <el-menu-item index="/cityFlow">城市流量可视化</el-menu-item>
             <el-menu-item index="/dataProcess">数据预处理</el-menu-item>
             <el-menu-item index="/carTrajectory">车辆轨迹</el-menu-item>
+            <el-menu-item index="/taxiTra">出租车轨迹</el-menu-item>
 
         </el-menu>
 
