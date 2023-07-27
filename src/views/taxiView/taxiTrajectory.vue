@@ -28,6 +28,11 @@
                 type="primary"
                 @click="handleButtonClick"
               >查询</el-button>
+
+              <el-button
+                  type="primary"
+                  @click="enterMap"
+              >进入地图</el-button>
             </div>
             <div >
                 <el-tag type="warning" class="table_header" effect="dark">车辆列表</el-tag>
@@ -39,6 +44,7 @@
                         ref="carTable"
                         @row-click="handleRowClick"
                         @sort-change="sortChange"
+                        @selection-change="handleSelectionChange"
                         style="width: 100%">
                     <el-table-column
                             prop="carNumber"
@@ -130,18 +136,24 @@
                             {{ fun(scope.row.avgDistancePerDay) }}
                         </template>
                     </el-table-column>
-                    <el-table-column
-                        align="center"
-                        label="详情">
-                        <template slot-scope="scope">
-                            <el-button
-                                @click.native.prevent="goDetail(scope.$index, carTable)"
-                                type="text"
-                                size="small">
-                                查看
-                            </el-button>
-                        </template>
-                    </el-table-column>
+<!--                    <el-table-column-->
+<!--                        align="center"-->
+<!--                        label="详情">-->
+<!--                        <template slot-scope="scope">-->
+<!--                            <el-button-->
+<!--                                @click.native.prevent="goDetail(scope.$index, carTable)"-->
+<!--                                type="text"-->
+<!--                                size="small">-->
+<!--                                查看-->
+<!--                            </el-button>-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+                  <el-table-column
+                      align="center"
+                      label="选择"
+                      type="selection"
+                  >
+                  </el-table-column>
                 </el-table>
                 <el-pagination
                         :current-page="pageNum"
@@ -187,7 +199,8 @@ export default {
             //过滤时间范围
             timeRange: ['2023-04-01 00:00:00','2023-04-30 23:59:59'],
             //车辆的统计信息
-            carStat: null
+            carStat: null,
+            selected: [],
         }
     },
     methods: {
@@ -295,17 +308,26 @@ export default {
           this.isDesc = column.order === "descending"
           this.getCarInfoList()
         },
-        goDetail(index, rows) {
-            let row = rows[index]
-            this.$router.push({path:'/taxiDetail',query:{
-                carNumber:row.carNumber,
-                timeRange: this.timeRange
-            }});
-        },
-        handleButtonClick() {
-          this.getTotal();
-          this.getCarInfoList();
-        },
+      handleButtonClick() {
+        this.getTotal();
+        this.getCarInfoList();
+      },
+      handleSelectionChange(row) {
+        this.selected = row
+      },
+        // goDetail(index, rows) {
+        //     let row = rows[index]
+        //     this.$router.push({path:'/taxiDetail',query:{
+        //         carNumber:row.carNumber,
+        //         timeRange: this.timeRange
+        //     }});
+        // },
+      enterMap() {
+        this.$router.push({path:'/taxiDetail',query:{
+            selected: this.selected,
+            timeRange: this.timeRange
+          }});
+      },
         getCarInfoList() {
             let loading = Loading.service({ fullscreen: true, text: 'Loading'});
             this.axios.post("/taxi/getStatList",{

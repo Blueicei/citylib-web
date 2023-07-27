@@ -1,72 +1,201 @@
 <template>
     <el-container style="height: 100%">
         <el-aside width="35%">
+            <el-drawer
+                title="我是标题"
+                :visible.sync="drawer"
+                :direction="direction">
+              <el-table
+                  v-loading="tra_loading"
+                  element-loading-text="加载数据中"
+                  highlight-current-row
+                  :data="traTable.slice((tra_current_page-1) * 5, tra_current_page * 5)"
+                  @row-click="handleTraRowClick"
+                  ref="traTable"
+                  style="width: 100%">
+                <el-table-column
+                    prop="carNumber"
+                    align="center"
+                    label="车牌号"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="startTime"
+                    align="center"
+                    label="出发时间"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="endTime"
+                    align="center"
+                    label="结束时间"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="distanceCarry"
+                    align="center"
+                    label="载客里程(km)"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="distanceEmpty"
+                    align="center"
+                    label="空驶里程(km)"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="distanceCal"
+                    align="center"
+                    label="行驶距离(km)"
+                >
+                  <template slot-scope="scope">
+                    {{ distanceFun(scope.row.distanceCal) }}
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-pagination
+                  :current-page="tra_current_page"
+                  :total='traTable.length'
+                  @current-change="handleTraPageChange"
+                  layout="prev, pager, next"
+                  :page-size="5"
+              >
+              </el-pagination>
+            </el-drawer>
             <el-tabs v-model="activeTab" @tab-click="handleTabClick" type="card" :stretch="true">
                 <el-tab-pane label="轨迹" name="tra">
                     <el-tag class="table_header" effect="dark">轨迹列表</el-tag>
-                    <el-table
-                            v-loading="tra_loading"
-                            element-loading-text="加载数据中"
-                            highlight-current-row
-                            :data="traTable.slice((tra_current_page-1) * 5, tra_current_page * 5)"
-                            @row-click="handleTraRowClick"
-                            ref="traTable"
-                            style="width: 100%">
-                        <el-table-column
-                                prop="carNumber"
-                                align="center"
-                                label="车牌号"
-                        >
-                        </el-table-column>
-                        <el-table-column
-                                prop="startTime"
-                                align="center"
-                                label="出发时间"
-                        >
-                        </el-table-column>
-                        <el-table-column
-                            prop="endTime"
-                            align="center"
-                            label="结束时间"
-                        >
-                        </el-table-column>
-                        <el-table-column
-                                prop="distanceCarry"
-                                align="center"
-                                label="载客里程(km)"
-                        >
-                        </el-table-column>
-                        <el-table-column
-                            prop="distanceEmpty"
-                            align="center"
-                            label="空驶里程(km)"
-                        >
-                        </el-table-column>
-                        <el-table-column
-                            prop="distanceCal"
-                            align="center"
-                            label="行驶距离(km)"
-                        >
-                          <template slot-scope="scope">
-                            {{ distanceFun(scope.row.distanceCal) }}
-                          </template>
-                        </el-table-column>
-                        <el-table-column
-                                prop="color"
-                                label="颜色">
-                            <template slot-scope="scope">
-                                <el-color-picker
-                                        v-model="scope.row.color"
-                                        :predefine="predefineColors"
-                                        size="mini" show-alpha
-                                        @change="handleTraRowClick(scope.row)"></el-color-picker>
-                            </template>
-                        </el-table-column>
-                    </el-table>
+                  <el-table
+                      v-loading="car_loading"
+                      highlight-current-row
+                      element-loading-text="加载数据中"
+                      :data="carTable"
+                      ref="carTable"
+                      style="width: 100%">
+                    <el-table-column
+                        fixed="left"
+                        prop="carNumber"
+                        align="center"
+                        label="车牌号"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="traCount"
+                        align="center"
+                        label="轨迹数"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="totalTime"
+                        align="center"
+                        label="总出行时间/h"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.totalTime) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="totalDistance"
+                        align="center"
+                        label="总出行距离/km"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.totalDistance) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="dayCount"
+                        align="center"
+                        label="总出行天数"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="avgTime"
+                        align="center"
+                        label="平均出行时间/h"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.avgTime) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="avgDistance"
+                        align="center"
+                        label="平均出行距离/km"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.avgDistance) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="avgSpeed"
+                        align="center"
+                        label="平均出行速度km/h"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.avgSpeed) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="avgTimePerDay"
+                        align="center"
+                        label="平均一天的出行时间/h"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.avgTimePerDay) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                        sortable
+                        prop="avgDistancePerDay"
+                        align="center"
+                        label="平均一天的出行距离/km"
+                    >
+                      <template slot-scope="scope">
+                        {{ fun(scope.row.avgDistancePerDay) }}
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                        prop="color"
+                        label="颜色">
+                      <template slot-scope="scope">
+                        <el-color-picker
+                            v-model="scope.row.color"
+                            :predefine="predefineColors"
+                            size="mini" show-alpha
+                            @change="changeColor(scope.row)"></el-color-picker>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                        align="center"
+                        label="详情"
+                        fixed="right"
+                    >
+                      <template slot-scope="scope">
+                        <el-button
+                            @click.native.prevent="showTra(scope.$index, carTable)"
+                            type="text"
+                            size="small">
+                          查看
+                        </el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+
                     <el-pagination
-                            :current-page="tra_current_page"
-                            :total='traTable.length'
-                            @current-change="handleTraPageChange"
+                            :current-page="car_current_page"
+                            :total='carTable.length'
+                            @current-change="handleCarPageChange"
                             layout="prev, pager, next"
                             :page-size="5"
                     >
@@ -344,6 +473,16 @@ export default {
           //记录轨迹是否展示
           isShow: new Map(),
           overlayMap: new Map(),
+          car_loading: false,
+          //已选中的车辆
+          carTable: [],
+          car_current_page: 1,
+          //车辆信息
+          carInfo: new Map(),
+          //抽屉是否展示
+          drawer: false,
+          direction: 'ltr',
+          defaultColor: '#409eff',
         }
     },
     methods: {
@@ -372,8 +511,10 @@ export default {
         handleTraPageChange(val) {
             this.tra_current_page = val
         },
+        handleCarPageChange(val) {
+          this.car_current_page = val
+        },
         handlePOINTpageChange(val) {
-          console.log(val)
             this.point_current_page = val
         },
         handleMapClick(e) {
@@ -394,6 +535,10 @@ export default {
         changOriTimeRange(timeRange){
           this.originTraTimeRange = timeRange
         },
+      changeColor(row){
+        let carNumber = row.carNumber
+        this.carInfo.get(carNumber).color = row.color
+      },
         // 点图标点击事件
         clickHandler(e) {
             this.infoPosition.lng = e.point.lng
@@ -430,9 +575,8 @@ export default {
             let map = this.baidumap
             let traId = row.traId
             await this.getPointByTra(traId)
-            this.showPoint = true
+            // this.showPoint = true
             if(this.isShow.get(traId)){
-              console.log("isShow")
               let idx;
               let overlayArr = this.overlayMap.get(traId)
               for(idx in overlayArr){
@@ -440,7 +584,8 @@ export default {
               }
               this.isShow.set(traId,false)
             }else {
-              this.drawLine(this.pointTable, row.color, traId)
+
+              this.drawLine(this.pointTable, this.carInfo.get(row.carNumber).color, traId)
             }
             // this.playPause = false
             // this.play = false
@@ -469,6 +614,11 @@ export default {
               }
             }
         },
+        showTra(idx,carTable){
+          this.carNumber = carTable[idx].carNumber
+          this.getTraByCar()
+          this.drawer = true
+        },
         async showOriginTra(){
           if (this.originPointTable.length === 0){
             await this.getOriginTra()
@@ -477,7 +627,7 @@ export default {
         },
         async getOriginTra() {
           this.originPointTable = []
-          await this.axios.post("/taxi/getPointByCar",{
+          await this.axios.post("/taxi/getGpsPointByCar",{
             "carNumber": this.carNumber,
             "minTime": this.originTraTimeRange[0],
             "maxTime": this.originTraTimeRange[1],
@@ -507,10 +657,8 @@ export default {
                 val = '' + v
             }
             const clusterFlowLine = this.clusterFlowLine
-            console.log(val)
             for(const key of Object.keys(clusterFlowLine)){
                 if(key == val && clusterFlowLine[key].length > 0){
-                    console.log(clusterFlowLine[key])
                     let potArr = []
                     potArr.push(new BMap.Point(clusterFlowLine[key][0].lng, clusterFlowLine[key][0].lat))
                     potArr.push(new BMap.Point(clusterFlowLine[key][1].lng, clusterFlowLine[key][1].lat))
@@ -537,7 +685,6 @@ export default {
                     for (let i=0;i<allOverlay.length;i++) {
 
                         if (allOverlay[i].name === key) {
-                            console.log(allOverlay[i])
                             map.removeOverlay(allOverlay[i])
                         }
                     }
@@ -580,7 +727,6 @@ export default {
                             distanceCarry: item.distanceCarry,
                             distanceEmpty: item.distanceEmpty,
                             distanceCal: item.distanceCal,
-                            color: '#409eff'
                         })
                 })
                 this.tra_loading = false
@@ -589,7 +735,7 @@ export default {
         async getPointByTra(traId) {
           this.point_loading = true
           this.pointTable = []
-          await this.axios.get("/taxi/getPointByTra?traId=" + traId).then(res => {
+          await this.axios.get("/taxi/getGpsPointByTra?traId=" + traId).then(res => {
             res.data.msg.forEach(item => {
               this.pointTable.push(
                   {
@@ -714,8 +860,6 @@ export default {
                     arr.push(item)
                 })
             }
-            console.log('cluster number：' + arr.length)
-            console.log('total number：' + markerCluster.getMarkers().length)
             markerCluster.getMarkers().forEach(item => {
                 let name = item.name
                 let flag = true
@@ -774,7 +918,6 @@ export default {
             }
             let keyArray = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
             let clusterCountMap = {}
-            console.log(clusterArr)
             keyArray.forEach(item => {
                 clusterCountMap[item] = JSON.parse(JSON.stringify(clusterArr))
             })
@@ -793,7 +936,6 @@ export default {
                 }
                 clusterCountMap[hour] = tempCluster
             }
-            console.log(clusterCountMap)
             for (const key of keyArray) {
                 let startMax = 0
                 let startMaxCluster = null
@@ -823,9 +965,26 @@ export default {
 
     },
     created() {
-        this.carNumber = this.$route.query.carNumber;
+        this.car_loading = true
+        let selected = this.$route.query.selected
+        if(typeof selected[0] == 'object'){
+          sessionStorage.setItem('selected',JSON.stringify(selected))
+        }
+        let carTable = JSON.parse(sessionStorage.getItem('selected'))
+      for(let idx in carTable){
+        carTable[idx].color = this.defaultColor
+        let carNumber = carTable[idx].carNumber
+        if (this.carInfo.get(carNumber) === undefined){
+          let info = {}
+          info.color = this.defaultColor
+          this.carInfo.set(carNumber,info)
+        }
+      }
+
+        this.carTable = carTable
+        this.car_loading = false
         this.timeRange = this.$route.query.timeRange;
-        this.getTraByCar()
+
     },
     mounted() {
     },
