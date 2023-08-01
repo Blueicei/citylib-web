@@ -336,14 +336,6 @@
           :scroll-wheel-zoom="true"
           @click="handleMapClick"
         >
-          <bml-heatmap
-            v-if="showHeatMap"
-            :data="heatMapInfo"
-            :max="heatMapMax"
-            :radius="20"
-          >
-          </bml-heatmap>
-
           <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
         </baidu-map>
       </div>
@@ -366,30 +358,13 @@ export default {
   },
   data() {
     return {
-      slider: 0,
-      step: 1,
+      //控制动画展示
       play: false,
       playPause: false,
       // 地图中心
       center: "济南",
-      // 车牌信息
-      carID: "",
-      // 海量点信息
-      camera_info: [],
-      heatMapInfo: [],
-      heatMapMax: 100,
-      // 单独点信息
-      point_info: null,
-      // 窗口位置信息
-      infoPosition: { lng: 0, lat: 0 },
-      // 信息窗口内容
-      infoCont: "",
-      // 点图标大小
-      sizeDot: "BMAP_POINT_SIZE_BIG",
       // 控制信息窗口显示
       showInfo: false,
-      // 控制摄像头图标显示
-      showcam: false,
       // 缩放大小
       zoom: 12,
       // 存百度地图实例
@@ -480,7 +455,8 @@ export default {
     handler({ BMap, map }) {
       this.baiduMap = BMap;
       this.baidumap = map;
-      // this.initGrid()
+      console.log(BMap);
+      console.log(map);
     },
     goBack() {
       this.$router.back();

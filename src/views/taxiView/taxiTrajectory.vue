@@ -1,7 +1,6 @@
 <template>
   <el-container style="height: 100%">
     <el-dialog
-      v-Drag
       title="可选出租车列表"
       :visible.sync="taxi_add_show"
       :direction="direction"
