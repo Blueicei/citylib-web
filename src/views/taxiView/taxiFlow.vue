@@ -4,12 +4,29 @@
       <div class="mapView">
         <!-- 顶部按钮-->
         <div class="switchButton">
+          <el-date-picker
+            v-model="timeRange"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            @change="handleTimeRange"
+          />
           <el-button
             style="margin-left: 10px"
             type="primary"
             @click="clearOverlay"
             size="mini"
             >清空覆盖物
+          </el-button>
+          <el-button
+            style="margin-left: 10px"
+            type="primary"
+            @click="getCityFlow"
+            size="mini"
+            >展示流量
           </el-button>
         </div>
         <div
@@ -36,7 +53,8 @@ export default {
       // 缩放大小
       zoom: 12,
       // 存百度地图实例
-      mapgl: null,
+      mapGL: null,
+      gpsPoints: [],
       predefineColors: [
         "#ff4500",
         "#ff8c00",
@@ -74,15 +92,60 @@ export default {
           offset: new BMap.Size(-26, -26),
         },
       ],
-      timeRange: [],
+      timeRange: ["2023-04-01 06:00:00", "2023-04-01 07:00:00"],
     };
   },
   methods: {
+    initMap() {
+      let map = new BMapGL.Map("map");
+      map.centerAndZoom(this.center, 12); // 初始化地图,设置中心点坐标和地图级别
+      map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+      map.setMapStyle({ style: "midnight" });
+      this.mapGL = map;
+    },
+    getCityFlow() {
+      let view = new mapvgl.View({
+        map: this.mapGL,
+      });
+      this.axios
+        .post("/taxi/getGpsPoints", {
+          minTime: this.timeRange[0],
+          maxTime: this.timeRange[1],
+        })
+        .then((res) => {
+          let data = [];
+          res.data.msg.forEach((e) => {
+            data.push({
+              geometry: {
+                type: "Point",
+                coordinates: [e.lng, e.lat],
+              },
+              properties: {
+                count: e.count,
+              },
+            });
+          });
+          let pointLayer = new mapvgl.HeatPointLayer({
+            blend: "lighter",
+            style: "grid",
+            shape: "square",
+            size: 1,
+            min: 0,
+            max: 1000,
+            gradient: {
+              0.0: "rgb(50, 50, 256)",
+              0.1: "rgb(50, 250, 56)",
+              0.5: "rgb(250, 250, 56)",
+              1.0: "rgb(250, 50, 56)",
+            },
+          });
+          view.addLayer(pointLayer);
+          pointLayer.setData(data);
+          console.log(data);
+        });
+    },
     clearOverlay() {
-      let map = this.baidumap;
-      // this.showCamera = false
-      // this.showHeatMap = false
-      // this.showCluster = false
+      let map = this.mapGL;
       map.clearOverlays();
       for (let key of this.isShow.keys()) {
         this.isShow.set(key, false);
@@ -91,13 +154,13 @@ export default {
         this.overlayMap.set(key, undefined);
       }
     },
+    handleTimeRange(timeRange) {
+      this.timeRange = timeRange;
+    },
   },
   created() {},
   mounted() {
-    let map = new BMapGL.Map("map");
-    map.centerAndZoom(new BMapGL.Point(116.404, 39.915), 12); // 初始化地图,设置中心点坐标和地图级别
-    map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-    this.mapgl = map;
+    this.initMap();
   },
   updated() {},
   watch: {},
