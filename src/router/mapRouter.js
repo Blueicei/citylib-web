@@ -61,6 +61,18 @@ let MapRouter = [
       }
     ]
   },
+  {
+    path: "",
+    name: "",
+    component: layoutIndex,
+    children: [
+      {
+        path: "/camFlow",
+        name: "camFlow",
+        component: () => import("../views/camFlow.vue")
+      }
+    ]
+  },
 ]
 
 export {MapRouter};
