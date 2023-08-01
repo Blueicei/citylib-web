@@ -16,8 +16,8 @@ Vue.use(BaiduMap, {
   ak: "ZVFg9cnT2o7QDHB9QQv34kRlTNxVbBdt",
 });
 Vue.use(ElementUI);
-axios.defaults.baseURL = "//211.87.232.144:8086";
-// axios.defaults.baseURL = "//localhost:8086";
+// axios.defaults.baseURL = "//211.87.232.144:8086";
+axios.defaults.baseURL = "//localhost:8086";
 Vue.use(VueAxios, axios);
 NProgress.inc(0.4);
 NProgress.configure({
