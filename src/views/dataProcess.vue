@@ -312,7 +312,7 @@ export default {
             })
             if (arrLabel.length) {
                 let loading = Loading.service({fullscreen: true, text: 'Loading'});
-                this.axios.post("/camTra/importData", arrLabel).then(res => {
+                this.axios.post("/api/importData", {'paths':arrLabel}).then(res => {
                     setTimeout(() => {
                         loading.close();
                     }, 1000);

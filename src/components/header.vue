@@ -16,21 +16,23 @@
           placeholder="请选择数据源"
           @change="handleDataSource"
         >
-          <el-option
-            v-for="item in dataSourceOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option> </el-select
-      ></el-menu-item>
-      <el-menu-item index="/cityFlow">城市流量可视化</el-menu-item>
-      <el-menu-item index="/dataProcess">数据预处理</el-menu-item>
-      <el-menu-item index="/carTrajectory">车辆轨迹</el-menu-item>
-      <el-menu-item index="/taxiTra">出租车轨迹</el-menu-item>
-      <el-menu-item index="/taxiFlow">出租车流量</el-menu-item>
-    </el-menu>
-  </el-header>
+            <el-menu-item><el-select v-model="dataSource" placeholder="请选择数据源" @change="handleDataSource">
+                <el-option
+                    v-for="item in dataSourceOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select></el-menu-item>
+            <el-menu-item index="/cityFlow">城市流量可视化</el-menu-item>
+            <el-menu-item index="/dataProcess">数据预处理</el-menu-item>
+            <el-menu-item index="/carTrajectory">车辆轨迹</el-menu-item>
+            <el-menu-item index="/camFlow">卡口流量</el-menu-item>
+          <el-menu-item index="/taxiTra">出租车轨迹</el-menu-item>
+          <el-menu-item index="/taxiFlow">出租车流量</el-menu-item>
+        </el-menu>
+
+    </el-header>
 </template>
 
 <script>

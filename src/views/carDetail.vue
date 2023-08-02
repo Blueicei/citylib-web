@@ -85,7 +85,7 @@
                     <el-pagination
                             :current-page="tra_current_page"
                             :total='traTable.length'
-                            @current-change="handleCAMpageChange"
+                            @current-change="handleTRApageChange"
                             layout="prev, pager, next"
                             :page-size="5"
                     >
@@ -153,6 +153,45 @@
                         <el-slider v-model="slider" :step="step" :max="24-step" :format-tooltip="formatTooltip"
                                    @change="change" @input="input" :disabled="!showCluster"></el-slider>
                     </div>
+                    <el-tag type="warning" class="FLOW_header" effect="dark">聚合点</el-tag>
+                    <el-table
+                        v-loading="cluster_loading"
+                        highlight-current-row
+                        element-loading-text="加载数据中"
+                        :data="clusterTable.slice((cluster_current_page-1) * 5, cluster_current_page * 5)"
+                        :default-sort="{prop:'startCount',order:'descending'}"
+                        @row-click="handleClusterRowClick"
+                        ref="clusterTable"
+                        style="width: 100%">
+                        <el-table-column
+                            prop="name"
+                            align="center"
+                            label="聚合点"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                            sortable
+                            prop="startCount"
+                            align="center"
+                            label="起点流量"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                            sortable
+                            prop="endCount"
+                            align="center"
+                            label="终点流量"
+                        >
+                        </el-table-column>
+                    </el-table>
+                    <el-pagination
+                        :current-page="cluster_current_page"
+                        :total='clusterTable.length'
+                        layout="prev, pager, next"
+                        @current-change="handleCLUSTERpageChange"
+                        :page-size="5"
+                    >
+                    </el-pagination>
                 </el-tab-pane>
             </el-tabs>
         </el-aside>
@@ -255,13 +294,11 @@
 <script>
 import {Loading} from 'element-ui';
 import {BmlHeatmap} from 'vue-baidu-map';
-import {BmlMarkerClusterer} from 'vue-baidu-map'
 
 export default {
     name: "carDetail",
     components: {
         BmlHeatmap,
-        BmlMarkerClusterer
     },
     data() {
         return {
@@ -297,6 +334,9 @@ export default {
             cam_loading: false,
             cam_current_page: 1,
             camTable: [],
+            cluster_loading: false,
+            cluster_current_page: 1,
+            clusterTable: [],
             showHeatMap: false,
             carNumber: '鲁A0000265022',
             activeTab: 'first',
@@ -310,6 +350,7 @@ export default {
             showCluster: false,
             markerCluster: null,
             clusterFlowLine: {},
+            clusterCountMap: {},
             predefineColors: [
                 "#ff4500",
                 "#ff8c00",
@@ -363,8 +404,14 @@ export default {
         handleCAMpageChange(val) {
             this.cam_current_page = val
         },
+        handleTRApageChange(val) {
+            this.tra_current_page = val
+        },
         handlePOINTpageChange(val) {
             this.point_current_page = val
+        },
+        handleCLUSTERpageChange(val) {
+            this.cluster_current_page = val
         },
         handleMapClick(e) {
             console.log(e.point.lng, e.point.lat)
@@ -414,6 +461,15 @@ export default {
             let clickPoint = new BMap.Point(row.lng, row.lat)
             const markerPoint = new BMap.Marker(clickPoint)
             markerPoint.name = row.camId
+            map.addOverlay(markerPoint);
+        },
+        handleClusterRowClick(row) {
+            console.log(row)
+
+            let map = this.baidumap
+            let clickPoint = new BMap.Point(row.lng, row.lat)
+            const markerPoint = new BMap.Marker(clickPoint)
+            markerPoint.name = row.name
             map.addOverlay(markerPoint);
         },
         handleTraRowClick(row) {
@@ -492,7 +548,13 @@ export default {
                 val = '' + v
             }
             const clusterFlowLine = this.clusterFlowLine
+            const clusterCountMap = this.clusterCountMap
+            this.clusterTable = []
             console.log(val)
+            clusterCountMap[val].forEach(item=>{
+                this.clusterTable.push({name:item.name,lng:item.center.lng,lat:item.center.lat,startCount:item.startCount,endCount:item.endCount})
+            })
+
             for(const key of Object.keys(clusterFlowLine)){
                 if(key == val && clusterFlowLine[key].length > 0){
                     console.log(clusterFlowLine[key])
@@ -619,11 +681,17 @@ export default {
             });
         },
         turnCluster(val) {
+            let map = this.baidumap
             if (!val) {
                 this.markerCluster.clearMarkers()
-                let map = this.baidumap
                 map.clearOverlays();
+                map.enableDoubleClickZoom(true) //禁止缩放
+                map.enableDragging(true);     //禁止拖拽
+                map.enableScrollWheelZoom(true);//禁止缩放
             } else {
+                map.disableDoubleClickZoom() //禁止缩放
+                map.disableDragging();     //禁止拖拽
+                map.disableScrollWheelZoom();//禁止缩放
                 this.initCluster()
                 // this.findNotIncludePoint()
                 this.getClusterFlow()
@@ -715,6 +783,7 @@ export default {
                 // });
                 clusterArr.push({
                     clusterId: i,
+                    name: cluster[i]._name,
                     center: cluster[i]._center,
                     points: pointArr,
                     startCount: 0,
@@ -743,6 +812,7 @@ export default {
                 clusterCountMap[hour] = tempCluster
             }
             console.log(clusterCountMap)
+            this.clusterCountMap = clusterCountMap
             for (const key of keyArray) {
                 let startMax = 0
                 let startMaxCluster = null
@@ -765,9 +835,6 @@ export default {
                 }
                 this.clusterFlowLine[key] = lineArr
             }
-            // this.axios.post("/camTra/getClusterFlow", clusterArr).then(res => {
-            //     console.log(res.data.msg)
-            // })
         },
 
     },
