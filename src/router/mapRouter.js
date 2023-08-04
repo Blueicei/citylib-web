@@ -81,11 +81,10 @@ let MapRouter = [
       {
         path: "/camFlow",
         name: "camFlow",
-        component: () => import("../views/camFlow.vue")
-      }
-    ]
+        component: () => import("../views/camFlow.vue"),
+      },
+    ],
   },
-]
   {
     path: "",
     name: "",
