@@ -423,9 +423,7 @@ export default {
                 this.cityFlow = res.data.msg
                 this.eChartsInit(res.data.msg)
                 console.log(this.cityFlow)
-                setTimeout(() => {
-                    loading.close();
-                }, 1000);
+                loading.close();
             }).catch(err => {
               console.log(err)
               loading.close()

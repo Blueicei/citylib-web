@@ -293,9 +293,7 @@ export default {
         onSubmit() {
             let loading = Loading.service({fullscreen: true, text: 'Loading'});
             this.axios.post("/camTra/generateTra", this.tra).then(res => {
-                setTimeout(() => {
-                    loading.close();
-                }, 1000);
+                loading.close();
                 console.log(res.data.msg)
             })
         },
@@ -313,11 +311,11 @@ export default {
             if (arrLabel.length) {
                 let loading = Loading.service({fullscreen: true, text: 'Loading'});
                 this.axios.post("/api/importData", {'paths':arrLabel}).then(res => {
-                    setTimeout(() => {
-                        loading.close();
-                    }, 1000);
+                    // let tableName = res.data.msg
+                    // this.axios.get("/stat/initStatTableByName?tableName=" + tableName).then(result => {})
+                    loading.close();
                     this.getSourceNames()
-                    alert('导入数据成功：数据源名称[' + res.data.msg + ']')
+                    alert('导入数据成功：数据源名称[' + result.data.msg + ']')
                 }).catch(err => {
                   console.log(err);
                   loading.close()
@@ -375,6 +373,7 @@ export default {
         },
         getSourceNames() {
             this.sourceTable = []
+            let loading = Loading.service({fullscreen: true, text: 'Loading'});
             this.axios.get("/camTra/getTables").then(res => {
 
                 res.data.msg.forEach(item => {
@@ -388,6 +387,7 @@ export default {
                             lastPointTime: item.lastPointTime,
                         })
                 })
+                loading.close()
             })
         },
         getCarTypes() {
